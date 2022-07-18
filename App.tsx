@@ -1,4 +1,16 @@
+import 'react-native-gesture-handler';
 import React, {Component} from 'react';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import Icon from 'react-native-vector-icons/Ionicons';
+import {
+  createDrawerNavigator,
+  DrawerContentScrollView,
+  DrawerItemList,
+  DrawerItem,
+} from '@react-navigation/drawer';
+
 import {
   Text,
   View,
@@ -8,113 +20,173 @@ import {
   ScrollView,
   Button,
   TextInput,
+  Image,
+  Linking,
 } from 'react-native';
-import MyHeader from './src/MyHeader';
-import Generator from './src/Generator';
-import Numlist from './src/Numlist';
-import Input from './src/Input';
+
+import Home from './src/Home';
+import User from './src/User';
+import Logo from './src/Logo';
+
+import PictogramHome from './src/assets/pics/home.png';
+
+import HomeDrawer from './src/Home_drawer';
+import UserDrawer from './src/User_drawer';
+import MyDrawer from './src/MyDrawer';
+
+import Home_Tab from './src/Home_Tab';
+import User_Tab from './src/User_Tab';
+
+// const Stack = createNativeStackNavigator();
+const Drawer = createDrawerNavigator();
+const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
+
+const TabComponent = () => {
+  return (
+    <Tab.Navigator
+      screenOptions={({route}) => ({
+        tabBarIcon: ({focused, color, size}) => {
+          let iconName;
+
+          if (route.name === 'Home') {
+            iconName = 'ios-information-circle-outline';
+          } else {
+            iconName = 'newspaper-outline';
+          }
+
+          // You can return any component that you like here!
+          return <Icon name={iconName} size={size} color={color} />;
+        },
+        tabBarActiveTintColor: 'tomato',
+        tabBarInactiveTintColor: 'gray',
+      })}>
+      <Tab.Screen name="Home" component={Home_Tab} />
+      <Tab.Screen name="User" component={User_Tab} />
+      <Tab.Screen name="Message" component={User_Tab} />
+    </Tab.Navigator>
+  );
+};
+
+const CustomDrawerContent = props => {
+  return (
+    <DrawerContentScrollView {...props}>
+      <DrawerItemList {...props} />
+      <DrawerItem
+        label="Hlep"
+        onPress={() => Linking.openURL('https://www.google.com')}
+        icon={() => <Logo></Logo>}></DrawerItem>
+      <DrawerItem
+        label="Info"
+        onPress={() => Linking.openURL('https://www.google.com')}></DrawerItem>
+    </DrawerContentScrollView>
+  );
+};
+
+const DrawerComponent = () => {
+  return (
+    <Drawer.Navigator
+      initialRouteName="Home"
+      screenOptions={{
+        drawerType: 'slide',
+        drawerStyle: {
+          backgroundColor: '#c6cbef',
+          width: 200,
+        },
+        drawerActiveTintColor: 'red',
+      }}
+      drawerContent={props => <MyDrawer {...props}></MyDrawer>}>
+      <Drawer.Screen name="Route" component={TabComponent} />
+    </Drawer.Navigator>
+  );
+};
 export default class App extends Component {
-  state = {
-    appName: 'my app yes ',
-    random: [36, 999],
-    myTextInput: 'fukc youeah',
-    alphabet: ['b', 'c'],
-  };
-
-  onChangeInput = event => {
-    this.setState({
-      myTextInput: event,
-    });
-  };
-  onAddRandomNum = () => {
-    const randomNum = Math.floor(Math.random() * 100) + 1;
-
-    this.setState(prevState => {
-      return {
-        random: [...prevState.random, randomNum],
-      };
-    });
-  };
-
-  onNumDelete = position => {
-    const newArray = this.state.random.filter((num, index) => {
-      return position != index;
-    });
-    this.setState({
-      random: newArray,
-    });
-  };
-
-  onAddTextInput = () => {
-    this.setState(prevState => {
-      return {
-        myTextInput: '',
-        alphabet: [...prevState.alphabet, prevState.myTextInput],
-      };
-    });
+  logoTitle = () => {
+    return (
+      <Image
+        style={{width: 40, height: 40}}
+        source={require('./src/assets/pics/home.png')}></Image>
+    );
   };
 
   render() {
     return (
-      <View style={styles.mainView}>
-        {/* <MyHeader name={this.state.appName}></MyHeader>
+      // <NavigationContainer>
+      //   <Drawer.Navigator
+      //     initialRouteName="Home"
+      //     screenOptions={{
+      //       drawerType: 'slide',
+      //       drawerStyle: {
+      //         backgroundColor: '#c6cbef',
+      //         width: 200,
+      //       },
+      //       drawerActiveTintColor: 'red',
+      //     }}
+      //     drawerContent={props => <MyDrawer {...props}></MyDrawer>}>
+      //     <Drawer.Screen
+      //       name="Home"
+      //       component={HomeDrawer}
+      //       options={{
+      //         drawerIcon: () => (
+      //           <Image
+      //             source={PictogramHome}
+      //             style={{width: 40, height: 40}}></Image>
+      //         ),
+      //       }}
+      //     />
+      //     <Drawer.Screen name="User" component={UserDrawer} />
+      //   </Drawer.Navigator>
+      // </NavigationContainer>
+      // <NavigationContainer>
+      //   <Stack.Navigator
+      //     initialRouteName="Home"
+      //     screenOptions={{
+      //       headerStyle: {
+      //         backgroundColor: 'pink',
+      //       },
+      //       headerTintColor: 'black',
+      //     }}>
+      //     <Stack.Screen
+      //       name="Home"
+      //       component={Home}
+      //       options={{
+      //         title: 'Home Screedfn ',
+      //         headerTitle: () => <Logo />,
+      //         headerRight: () => (
+      //           <Button
+      //             title="Info"
+      //             onPress={() => alert('hello')}
+      //             color="orange"></Button>
+      //         ),
+      //       }}
+      //     />
+      //     <Stack.Screen
+      //       name="User"
+      //       component={User}
+      //       initialParams={{
+      //         userIdx: 123,
+      //         userName: 'please go to home first',
+      //         userLastName: 'go to home~',
+      //       }}
+      //       options={{
+      //         title: 'user screen yeah',
 
-        <Generator add={this.onAddRandomNum}></Generator>
-        <ScrollView
-          style={styles.scrollView}
-          onMomentumScrollEnd={() => alert('begin')}>
-          <Numlist num={this.state.random} delete={this.onNumDelete}></Numlist>
-        </ScrollView> */}
-
-        <TextInput
-          value={this.state.myTextInput}
-          style={styles.input}
-          onChangeText={this.onChangeInput}
-          multiline={true}
-        />
-        <Button
-          title="add text here fucker"
-          onPress={this.onAddTextInput}></Button>
-
-        <ScrollView style={{width: '100%'}}>
-          {this.state.alphabet.map((item, idx) => (
-            <Text key={idx}>{item}</Text>
-          ))}
-        </ScrollView>
-      </View>
+      //         headerStyle: {
+      //           backgroundColor: 'cyan',
+      //         },
+      //         headerTintColor: 'black',
+      //       }}
+      //     />
+      //   </Stack.Navigator>
+      // </NavigationContainer>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen name="Home" component={Home}></Stack.Screen>
+          <Stack.Screen name="User" component={User}></Stack.Screen>
+        </Stack.Navigator>
+      </NavigationContainer>
     );
   }
 }
 
-const styles = StyleSheet.create({
-  mainView: {
-    flex: 1,
-    backgroundColor: 'green',
-    // justifyContent: 'center',
-    paddingTop: 50,
-    alignItems: 'center',
-  },
-  subView: {
-    backgroundColor: 'yellow',
-    marginBottom: 10,
-  },
-  subView2: {
-    flex: 2,
-    backgroundColor: 'yellow',
-    marginBottom: 10,
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  redText: {
-    fontSize: 20,
-    color: 'red',
-    padding: 20,
-  },
-  scrollView: {
-    width: '100%',
-  },
-  input: {
-    backgroundColor: 'red',
-  },
-});
+const styles = StyleSheet.create({});
